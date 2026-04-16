@@ -80,13 +80,20 @@
           ixy="0" ixz="0" iyz="0"/>
       </inertial>
       <xacro:if value="${use_mesh}">
-        <xacro:common_link_visual
-          mesh_filename="ft_sensor/xarm/visual/ft_sensor"
-          origin_xyz="0 0 -0.1191" origin_rpy="0 0 0"
-          material_name="${prefix}White"/>
-        <xacro:common_link_collision
-          mesh_filename="ft_sensor/xarm/collision/ft_sensor"
-          origin_xyz="0 0 -0.1191" origin_rpy="0 0 0"/>
+        <!-- STL units are millimetres; scale by 1e-3 to convert to URDF metres. -->
+        <visual>
+          <origin xyz="0 0 -0.1191" rpy="0 0 0"/>
+          <geometry>
+            <mesh filename="${mesh_path}/ft_sensor/xarm/visual/ft_sensor.${mesh_suffix}" scale="0.001 0.001 0.001"/>
+          </geometry>
+          <material name="${prefix}White"/>
+        </visual>
+        <collision>
+          <origin xyz="0 0 -0.1191" rpy="0 0 0"/>
+          <geometry>
+            <mesh filename="${mesh_path}/ft_sensor/xarm/collision/ft_sensor.${mesh_suffix}" scale="0.001 0.001 0.001"/>
+          </geometry>
+        </collision>
       </xacro:if>
       <xacro:unless value="${use_mesh}">
         <visual>
