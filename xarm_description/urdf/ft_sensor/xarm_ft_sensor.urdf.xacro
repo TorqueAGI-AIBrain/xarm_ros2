@@ -6,11 +6,12 @@
     Chain: attach_to -> link_ft_adapter (30 mm plate) -> link_ft_sensor (61 mm body).
     link_ft_sensor sits at the tool-output face; wrench values are referenced here.
 
-    Mesh note: the provided ft_sensor.stl contains the sensor body only (OD ~75 mm,
-    height ~58.6 mm). Its frame origin is offset: geometry sits at z in [60.5, 119.1] mm.
-    The visual origin below shifts it down by 119.1 mm so the top face lands at
-    link_ft_sensor origin (z=0) and the body extends in -Z back toward the adapter.
-    The mounting adapter has no mesh — rendered as a cylinder primitive.
+    Mesh note: ft_sensor.stl contains the sensor body only (OD ~75 mm, height
+    ~58.6 mm), stored in metres. Its frame origin is offset: geometry sits at
+    z in [0.0605, 0.1191] m. The visual origin below shifts it down by 0.1191 m
+    so the top face lands at link_ft_sensor origin (z=0) and the body extends
+    in -Z back toward the adapter. The mounting adapter has no mesh — rendered
+    as a cylinder primitive.
   -->
   <xacro:macro name="xarm_ft_sensor_urdf" params="
       prefix:=''
@@ -80,20 +81,13 @@
           ixy="0" ixz="0" iyz="0"/>
       </inertial>
       <xacro:if value="${use_mesh}">
-        <!-- STL units are millimetres; scale by 1e-3 to convert to URDF metres. -->
-        <visual>
-          <origin xyz="0 0 -0.1191" rpy="0 0 0"/>
-          <geometry>
-            <mesh filename="${mesh_path}/ft_sensor/xarm/visual/ft_sensor.${mesh_suffix}" scale="0.001 0.001 0.001"/>
-          </geometry>
-          <material name="${prefix}White"/>
-        </visual>
-        <collision>
-          <origin xyz="0 0 -0.1191" rpy="0 0 0"/>
-          <geometry>
-            <mesh filename="${mesh_path}/ft_sensor/xarm/collision/ft_sensor.${mesh_suffix}" scale="0.001 0.001 0.001"/>
-          </geometry>
-        </collision>
+        <xacro:common_link_visual
+          mesh_filename="ft_sensor/xarm/visual/ft_sensor"
+          origin_xyz="0 0 -0.1191" origin_rpy="0 0 0"
+          material_name="${prefix}White"/>
+        <xacro:common_link_collision
+          mesh_filename="ft_sensor/xarm/collision/ft_sensor"
+          origin_xyz="0 0 -0.1191" origin_rpy="0 0 0"/>
       </xacro:if>
       <xacro:unless value="${use_mesh}">
         <visual>
