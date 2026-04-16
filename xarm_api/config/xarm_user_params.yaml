@@ -1,0 +1,16 @@
+# User overrides applied on top of xarm_params.yaml at driver launch time.
+# Enables the F/T sensor service endpoints so the driver advertises them and
+# streams ft_ext_force / ft_raw_force inside /xarm/robot_states.
+ufactory_driver:
+  ros__parameters:
+    services:
+      set_ft_sensor_enable: true
+      set_ft_sensor_mode: true
+      set_ft_sensor_zero: true
+      get_ft_sensor_data: true
+      get_ft_sensor_mode: true
+      get_ft_sensor_error: true
+      iden_ft_sensor_load_offset: true
+      set_ft_sensor_load_offset: true
+      config_force_control: true
+      set_ft_sensor_admittance_parameters: true
