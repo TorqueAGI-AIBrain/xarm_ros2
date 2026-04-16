@@ -105,7 +105,7 @@ def launch_setup(context, *args, **kwargs):
         output='screen',
         parameters=[robot_description],
         remappings=[
-            # ('joint_states', joint_states_remapping),
+            ('joint_states', joint_states_remapping),
             ('/tf', 'tf'),
             ('/tf_static', 'tf_static'),
         ]
