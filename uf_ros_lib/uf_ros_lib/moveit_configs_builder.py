@@ -260,6 +260,7 @@ class MoveItConfigsBuilder(ParameterBuilder):
         add_d435i_links = get_param_str('add_d435i_links', True)
         use_gazebo_camera = get_param_str('use_gazebo_camera', False)
         add_other_geometry = get_param_str('add_other_geometry', False)
+        add_ft_sensor = get_param_str('add_ft_sensor', True)
         geometry_type = get_param_str('geometry_type', 'box')
         geometry_mass = get_param_str('geometry_mass', 0.1)
         geometry_height = get_param_str('geometry_height', 0.1)
@@ -307,6 +308,7 @@ class MoveItConfigsBuilder(ParameterBuilder):
             'add_d435i_links': add_d435i_links,
             'use_gazebo_camera': use_gazebo_camera,
             'add_other_geometry': add_other_geometry,
+            'add_ft_sensor': add_ft_sensor,
             'geometry_type': geometry_type,
             'geometry_mass': geometry_mass,
             'geometry_height': geometry_height,
@@ -327,6 +329,7 @@ class MoveItConfigsBuilder(ParameterBuilder):
             'add_vacuum_gripper': add_vacuum_gripper,
             'add_bio_gripper': add_bio_gripper,
             'add_other_geometry': add_other_geometry,
+            'add_ft_sensor': add_ft_sensor,
         }
 
         self.__urdf_package = Path(get_package_share_directory('xarm_description'))
