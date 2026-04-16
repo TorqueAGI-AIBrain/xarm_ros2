@@ -6,9 +6,10 @@
     limited:=false
     effort_control:=false 
     velocity_control:=false
-    add_gripper:=false
+    add_gripper:=true
     add_vacuum_gripper:=false
     add_bio_gripper:=false
+    add_ft_sensor:=true
     dof:=7
     robot_type:='xarm'
     ros2_control_plugin:='uf_robot_hardware/UFRobotSystemHardware'
@@ -228,14 +229,28 @@
         </xacro:if>
       </xacro:if>
     </xacro:if>
+    <xacro:if value="${add_ft_sensor}">
+      <xacro:include filename="$(find xarm_description)/urdf/ft_sensor/xarm_ft_sensor.urdf.xacro" />
+      <xacro:xarm_ft_sensor_urdf prefix="${prefix}" attach_to="${prefix}link${dof}" />
+    </xacro:if>
+
     <xacro:unless value="${add_realsense_d435i}">
       <link name="${prefix}link_eef"/>
     </xacro:unless>
-    <joint name="${prefix}joint_eef" type="fixed">
-      <origin xyz="0 0 0" rpy="0 0 0" />
-      <parent link="${prefix}link${dof}" />
-      <child link="${prefix}link_eef" />
-    </joint>
+    <xacro:if value="${add_ft_sensor}">
+      <joint name="${prefix}joint_eef" type="fixed">
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <parent link="${prefix}link_ft_sensor" />
+        <child link="${prefix}link_eef" />
+      </joint>
+    </xacro:if>
+    <xacro:unless value="${add_ft_sensor}">
+      <joint name="${prefix}joint_eef" type="fixed">
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <parent link="${prefix}link${dof}" />
+        <child link="${prefix}link_eef" />
+      </joint>
+    </xacro:unless>
     
     <xacro:if value="${add_gripper}">
       <xacro:if value="${robot_type == 'lite'}">

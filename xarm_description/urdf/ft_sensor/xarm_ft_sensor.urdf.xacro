@@ -1,0 +1,106 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro" name="xarm_ft_sensor">
+
+  <!--
+    UFactory xArm 6-Axis Force/Torque Sensor (AI1302).
+    Chain: attach_to -> link_ft_adapter (30 mm plate) -> link_ft_sensor (61 mm body).
+    link_ft_sensor sits at the tool-output face; wrench values are referenced here.
+
+    Mesh note: the provided ft_sensor.stl contains the sensor body only (OD ~75 mm,
+    height ~58.6 mm). Its frame origin is offset: geometry sits at z in [60.5, 119.1] mm.
+    The visual origin below shifts it down by 119.1 mm so the top face lands at
+    link_ft_sensor origin (z=0) and the body extends in -Z back toward the adapter.
+    The mounting adapter has no mesh — rendered as a cylinder primitive.
+  -->
+  <xacro:macro name="xarm_ft_sensor_urdf" params="
+      prefix:=''
+      attach_to:=''
+      attach_xyz:='0 0 0'
+      attach_rpy:='0 0 0'
+      use_mesh:=true
+    ">
+
+    <xacro:property name="adapter_height" value="0.030"/>
+    <xacro:property name="adapter_radius" value="0.040"/>
+    <xacro:property name="adapter_mass"   value="0.140"/>
+
+    <xacro:property name="sensor_height" value="0.061"/>
+    <xacro:property name="sensor_radius" value="0.0375"/>
+    <xacro:property name="sensor_mass"   value="0.305"/>
+
+    <xacro:property name="stack_height" value="${adapter_height + sensor_height}"/>
+
+    <!-- Mounting adapter: bolts to the xArm tool flange (cylinder primitive). -->
+    <joint name="${prefix}joint_ft_adapter" type="fixed">
+      <parent link="${attach_to}"/>
+      <child  link="${prefix}link_ft_adapter"/>
+      <origin xyz="${attach_xyz}" rpy="${attach_rpy}"/>
+    </joint>
+
+    <link name="${prefix}link_ft_adapter">
+      <inertial>
+        <origin xyz="0 0 ${adapter_height/2}" rpy="0 0 0"/>
+        <mass value="${adapter_mass}"/>
+        <inertia
+          ixx="${adapter_mass*(3*adapter_radius*adapter_radius + adapter_height*adapter_height)/12}"
+          iyy="${adapter_mass*(3*adapter_radius*adapter_radius + adapter_height*adapter_height)/12}"
+          izz="${adapter_mass*adapter_radius*adapter_radius/2}"
+          ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+      <visual>
+        <origin xyz="0 0 ${adapter_height/2}" rpy="0 0 0"/>
+        <geometry><cylinder radius="${adapter_radius}" length="${adapter_height}"/></geometry>
+        <material name="${prefix}White"/>
+      </visual>
+      <collision>
+        <origin xyz="0 0 ${adapter_height/2}" rpy="0 0 0"/>
+        <geometry><cylinder radius="${adapter_radius}" length="${adapter_height}"/></geometry>
+      </collision>
+    </link>
+
+    <!--
+      link_ft_sensor: wrench reference frame at the tool-output face.
+      +Z points away from the arm (toward the tool). The sensor body is
+      rendered in -Z back toward the adapter.
+    -->
+    <joint name="${prefix}joint_ft_sensor" type="fixed">
+      <parent link="${prefix}link_ft_adapter"/>
+      <child  link="${prefix}link_ft_sensor"/>
+      <origin xyz="0 0 ${stack_height}" rpy="0 0 0"/>
+    </joint>
+
+    <link name="${prefix}link_ft_sensor">
+      <inertial>
+        <origin xyz="0 0 ${-sensor_height/2}" rpy="0 0 0"/>
+        <mass value="${sensor_mass}"/>
+        <inertia
+          ixx="${sensor_mass*(3*sensor_radius*sensor_radius + sensor_height*sensor_height)/12}"
+          iyy="${sensor_mass*(3*sensor_radius*sensor_radius + sensor_height*sensor_height)/12}"
+          izz="${sensor_mass*sensor_radius*sensor_radius/2}"
+          ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+      <xacro:if value="${use_mesh}">
+        <xacro:common_link_visual
+          mesh_filename="ft_sensor/xarm/visual/ft_sensor"
+          origin_xyz="0 0 -0.1191" origin_rpy="0 0 0"
+          material_name="${prefix}White"/>
+        <xacro:common_link_collision
+          mesh_filename="ft_sensor/xarm/collision/ft_sensor"
+          origin_xyz="0 0 -0.1191" origin_rpy="0 0 0"/>
+      </xacro:if>
+      <xacro:unless value="${use_mesh}">
+        <visual>
+          <origin xyz="0 0 ${-sensor_height/2}" rpy="0 0 0"/>
+          <geometry><cylinder radius="${sensor_radius}" length="${sensor_height}"/></geometry>
+          <material name="${prefix}White"/>
+        </visual>
+        <collision>
+          <origin xyz="0 0 ${-sensor_height/2}" rpy="0 0 0"/>
+          <geometry><cylinder radius="${sensor_radius}" length="${sensor_height}"/></geometry>
+        </collision>
+      </xacro:unless>
+    </link>
+
+  </xacro:macro>
+
+</robot>
