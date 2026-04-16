@@ -81,13 +81,18 @@
           ixy="0" ixz="0" iyz="0"/>
       </inertial>
       <xacro:if value="${use_mesh}">
+        <!--
+          STL's internal origin sits ~4 mm in -X and ~7 mm in +Y off the
+          sensor's rotational axis (CAD assembly origin artefact). Shift
+          so the body axis lines up with link_ft_sensor's z-axis.
+        -->
         <xacro:common_link_visual
           mesh_filename="ft_sensor/xarm/visual/ft_sensor"
-          origin_xyz="0 0 -0.1191" origin_rpy="0 0 0"
+          origin_xyz="0.0042 -0.0068 -0.1191" origin_rpy="0 0 0"
           material_name="${prefix}White"/>
         <xacro:common_link_collision
           mesh_filename="ft_sensor/xarm/collision/ft_sensor"
-          origin_xyz="0 0 -0.1191" origin_rpy="0 0 0"/>
+          origin_xyz="0.0042 -0.0068 -0.1191" origin_rpy="0 0 0"/>
       </xacro:if>
       <xacro:unless value="${use_mesh}">
         <visual>
